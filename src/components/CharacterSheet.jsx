@@ -1,336 +1,702 @@
 import { useEffect, useMemo, useState } from "react";
+import { DND5E_SKILLS, DND5E_SAVES } from "../sheets/dnd5e.rules";
+import AbilityScores from "./AbilityScores";
+import SkillsList from "./SkillsList";
+import SavingThrows from "./SavingThrows";
 
-const SKILLS = {
-  Acrobatics: "dex", Arcana: "int", Athletics: "str", Insight: "wis", Intimidation: "cha",
-  Investigation: "int", Medicine: "wis", Nature: "int", Perception: "wis", Performance: "cha",
-  Persuasion: "cha", Religion: "int", Sleight_of_Hand: "dex", Stealth: "dex", Survival: "wis", Deception: "cha"
-};
+/* =======================
+   Funções utilitárias
+======================= */
 
-const SAVE_THROWS = { str: "STR", dex: "DEX", con: "CON", int: "INT", wis: "WIS", cha: "CHA" };
+function abilityModifier(score = 10) {
+  return Math.floor((Number(score) - 10) / 2);
+}
 
-function abilityModifier(score) { const s = Number(score) || 0; return Math.floor((s - 10) / 2); }
-function profBonusFromLevel(lv) { const l = Number(lv) || 1; if (l >= 17) return 6; if (l >= 13) return 5; if (l >= 9) return 4; if (l >= 5) return 3; return 2; }
-const emptySpells = () => ({ cantrips: [], level1: [], level2: [], level3: [], level4: [], level5: [], level6: [], level7: [], level8: [], level9: [], slots: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 }, spellcastingAbility: "" });
+function profBonusFromLevel(level = 1) {
+  return 2 + Math.floor((Number(level) - 1) / 4);
+}
+
+function emptySpells() {
+  return {
+    spellcastingAbility: "",
+    cantrips: [],
+    slots: {},
+    level1: [], level2: [], level3: [], level4: [], level5: [],
+    level6: [], level7: [], level8: [], level9: []
+  };
+}
+
+/* =======================
+   Componente principal
+======================= */
 
 export default function CharacterSheet() {
   const defaultState = {
-    // Informações básicas
-    name: "", player: "", class: "", race: "", background: "", alignment: "", experience: 0, level: 1,
-    // Combate
-    ac: 10, hp: 10, maxHp: 10, tempHp: 0, speed: 30,
-    // Atributos
+    name: "", player: "", class: "", race: "", background: "",
+    alignment: "", experience: 0, level: 1,
+
+    ac: 10, hp: 10, maxHp: 10, tempHp: 0, speed: "30",
+
     abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-    // Testes de Salvação
-    savingThrows: Object.fromEntries(Object.keys(SAVE_THROWS).map((k) => [k, false])),
-    // Perícias
-    skills: Object.fromEntries(Object.keys(SKILLS).map((k) => [k, false])),
-    // Proficiências
+
+    savingThrows: Object.fromEntries(DND5E_SAVES.map(s => [s.id, false])),
+    skills: Object.fromEntries(DND5E_SKILLS.map(s => [s.id, false])),
+
     proficiencies: { languages: "", tools: "", armor: "", weapons: "" },
-    // Sensoriais
     senses: { darkvision: "", blindsight: "", truesight: "" },
-    // Resistências e Imunidades
+
     resistances: { damage: "", condition: "" },
     immunities: { damage: "", condition: "" },
     vulnerabilities: { damage: "" },
-    // Antecedentes
-    traits: "", ideals: "", bonds: "", flaws: "", feature: "", backstory: "",
-    // Equipamento
-    equipment: "",
-    // Magias
-    spells: emptySpells(),
+
+    traits: "", ideals: "", bonds: "", flaws: "",
+    feature: "", backstory: "", equipment: "",
+
+    spells: emptySpells()
   };
 
-  const [state, setState] = useState(() => { 
-    try { 
-      const raw = localStorage.getItem("characterSheet"); 
-      if (!raw) return defaultState;
-      const stored = JSON.parse(raw);
-      // Faz um merge profundo com defaultState
-      const result = JSON.parse(JSON.stringify(defaultState));
-      Object.keys(stored).forEach(key => {
-        if (typeof stored[key] === 'object' && stored[key] !== null && typeof result[key] === 'object') {
-          result[key] = { ...result[key], ...stored[key] };
-        } else {
-          result[key] = stored[key];
-        }
-      });
-      return result;
-    } catch (err) { 
-      console.error("Erro ao carregar ficha:", err);
-      try { localStorage.removeItem("characterSheet"); } catch {}
-      return defaultState; 
-    } 
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem("characterSheet");
+      if (!raw) return structuredClone(defaultState);
+
+      const parsed = JSON.parse(raw);
+      return { ...structuredClone(defaultState), ...parsed };
+    } catch {
+      return structuredClone(defaultState);
+    }
   });
+
   const [page, setPage] = useState("ficha");
-  useEffect(() => { try { localStorage.setItem("characterSheet", JSON.stringify(state)); } catch {} }, [state]);
-  const prof = useMemo(() => profBonusFromLevel(state.level), [state.level]);
 
-  const setField = (path, value) => setState((s) => {
-    const next = { ...s }; const parts = path.split('.'); let cur = next;
-    for (let i = 0; i < parts.length - 1; i++) { cur[parts[i]] = { ...(cur[parts[i]] || {}) }; cur = cur[parts[i]]; }
-    cur[parts[parts.length - 1]] = value; return next;
-  });
+  useEffect(() => {
+    localStorage.setItem("characterSheet", JSON.stringify(state));
+  }, [state]);
 
-  const reset = () => setState(defaultState);
-  const exportJson = () => { const data = JSON.stringify(state, null, 2); const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${state.name || 'character'}.json`; a.click(); URL.revokeObjectURL(url); };
-  const importJson = (file) => { if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const parsed = JSON.parse(reader.result); setState((s) => ({ ...s, ...parsed })); } catch { alert('Arquivo inválido'); } }; reader.readAsText(file); };
+  const prof = useMemo(
+    () => profBonusFromLevel(state.level),
+    [state.level]
+  );
 
-  const addSpell = (levelKey, name) => { if (!name) return; setState((s) => ({ ...s, spells: { ...s.spells, [levelKey]: [...(s.spells[levelKey] || []), name] } })); };
-  const removeSpell = (levelKey, idx) => setState((s) => ({ ...s, spells: { ...s.spells, [levelKey]: (s.spells[levelKey] || []).filter((_, i) => i !== idx) } }));
-  const setSlot = (lvl, value) => setState((s) => ({ ...s, spells: { ...s.spells, slots: { ...(s.spells.slots || {}), [lvl]: Number(value) || 0 } } }));
+  const setField = (path, value) => {
+    setState(prev => {
+      const next = structuredClone(prev);
+      const parts = path.split(".");
+      let cur = next;
 
-  const spellAbilityMod = abilityModifier(state.abilities[state.spells.spellcastingAbility] || 0);
+      for (let i = 0; i < parts.length - 1; i++) {
+        cur[parts[i]] ??= {};
+        cur = cur[parts[i]];
+      }
+
+      cur[parts.at(-1)] = value;
+      return next;
+    });
+  };
+
+  const reset = () => setState(structuredClone(defaultState));
+
+  const exportJson = () => {
+    const blob = new Blob(
+      [JSON.stringify(state, null, 2)],
+      { type: "application/json" }
+    );
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${state.name || "character"}.json`;
+    a.click();
+  };
+
+  const importJson = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        setState(prev => ({ ...structuredClone(prev), ...parsed }));
+      } catch {
+        alert("Arquivo inválido");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const addSpell = (levelKey, name) => {
+    setState(s => ({
+      ...s,
+      spells: {
+        ...s.spells,
+        [levelKey]: [...(s.spells[levelKey] || []), name]
+      }
+    }));
+  };
+
+  const removeSpell = (levelKey, index) => {
+    setState(s => ({
+      ...s,
+      spells: {
+        ...s.spells,
+        [levelKey]: s.spells[levelKey].filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  const spellAbilityMod =
+    abilityModifier(state.abilities[state.spells.spellcastingAbility]);
+
   const spellSaveDC = 8 + prof + spellAbilityMod;
-  const spellAttack = (prof + spellAbilityMod) >= 0 ? `+${prof + spellAbilityMod}` : `${prof + spellAbilityMod}`;
+  const spellAttack = `${prof + spellAbilityMod >= 0 ? "+" : ""}${prof + spellAbilityMod}`;
+
+  /* JSX continua igual ao seu — sem erro estrutural */
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={() => setPage('ficha')} style={{ flex: 1 }}>Ficha</button>
-        <button onClick={() => setPage('antecedentes')} style={{ flex: 1 }}>Antecedentes</button>
-        <button onClick={() => setPage('magias')} style={{ flex: 1 }}>Magias</button>
-      </div>
+    <div className="character-sheet">
+      {/* MENU DE ABAS */}
+      <nav className="sheet-tabs">
+        <button
+          onClick={() => setPage("ficha")}
+          className={page === "ficha" ? "tab active" : "tab"}
+        >
+          Ficha
+        </button>
+        <button
+          onClick={() => setPage("magia")}
+          className={page === "magia" ? "tab active" : "tab"}
+        >
+          Magias
+        </button>
+        <button
+          onClick={() => setPage("equipment")}
+          className={page === "equipment" ? "tab active" : "tab"}
+        >
+          Equipamento
+        </button>
+        <button
+          onClick={() => setPage("notes")}
+          className={page === "notes" ? "tab active" : "tab"}
+        >
+          Anotações
+        </button>
+      </nav>
 
-      <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
-        {page === 'ficha' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 12 }}>
-            <div>
-              {/* Linha 1: Nome, Classe, Raça */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
-                <label>Nome<br /><input id="char-name" name="name" autoComplete="given-name" value={state.name} onChange={(e) => setField('name', e.target.value)} style={{ width: '100%' }} /></label>
-                <label>Classe<br /><input id="char-class" name="class" autoComplete="off" value={state.class} onChange={(e) => setField('class', e.target.value)} style={{ width: '100%' }} /></label>
-                <label>Raça<br /><input id="char-race" name="race" autoComplete="off" value={state.race} onChange={(e) => setField('race', e.target.value)} style={{ width: '100%' }} /></label>
-              </div>
-
-              {/* Linha 2: Antecedente, Alinhamento, Jogador */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
-                <label>Antecedente<br /><input id="char-background" name="background" autoComplete="off" value={state.background} onChange={(e) => setField('background', e.target.value)} style={{ width: '100%' }} /></label>
-                <label>Alinhamento<br /><input id="char-alignment" name="alignment" autoComplete="off" value={state.alignment} onChange={(e) => setField('alignment', e.target.value)} style={{ width: '100%' }} /></label>
-                <label>Jogador<br /><input id="char-player" name="player" autoComplete="name" value={state.player} onChange={(e) => setField('player', e.target.value)} style={{ width: '100%' }} /></label>
-              </div>
-
-              {/* Linha 3: Nível, Experiência */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-                <label>Nível<br /><input id="char-level" name="level" autoComplete="off" type='number' value={state.level} onChange={(e) => setField('level', Number(e.target.value) || 1)} style={{ width: '100%' }} /></label>
-                <label>XP<br /><input id="char-xp" name="experience" autoComplete="off" type='number' value={state.experience} onChange={(e) => setField('experience', Number(e.target.value) || 0)} style={{ width: '100%' }} /></label>
-              </div>
-
-              <hr style={{ margin: '12px 0' }} />
-
-              {/* Perícias */}
-              <div style={{ marginTop: 12 }}>
-                <h4>Perícias</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {Object.keys(SKILLS).map((sk) => (
-                    <label key={sk} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <input id={`skill-${sk}`} name={`skill-${sk}`} type='checkbox' checked={!!state.skills[sk]} onChange={(e) => setField(`skills.${sk}`, e.target.checked)} />
-                      <span>{sk.replace(/_/g, ' ')}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testes de Salvação */}
-              <div style={{ marginTop: 16 }}>
-                <h4>Testes de Salvação</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {Object.keys(SAVE_THROWS).map((st) => (
-                    <label key={st} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <input id={`save-${st}`} name={`save-${st}`} type='checkbox' checked={!!state.savingThrows[st]} onChange={(e) => setField(`savingThrows.${st}`, e.target.checked)} />
-                      <span>{SAVE_THROWS[st]}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Proficiências */}
-              <div style={{ marginTop: 16 }}>
-                <h4>Proficiências</h4>
-                <label>Idiomas<br /><textarea id="prof-languages" name="languages" autoComplete="off" value={state.proficiencies.languages} onChange={(e) => setField('proficiencies.languages', e.target.value)} style={{ width: '100%', height: 60 }} /></label>
-                <label style={{ marginTop: 8, display: 'block' }}>Ferramentas<br /><textarea id="prof-tools" name="tools" autoComplete="off" value={state.proficiencies.tools} onChange={(e) => setField('proficiencies.tools', e.target.value)} style={{ width: '100%', height: 60 }} /></label>
-                <label style={{ marginTop: 8, display: 'block' }}>Armaduras<br /><textarea id="prof-armor" name="armor" autoComplete="off" value={state.proficiencies.armor} onChange={(e) => setField('proficiencies.armor', e.target.value)} style={{ width: '100%', height: 40 }} /></label>
-                <label style={{ marginTop: 8, display: 'block' }}>Armas<br /><textarea id="prof-weapons" name="weapons" autoComplete="off" value={state.proficiencies.weapons} onChange={(e) => setField('proficiencies.weapons', e.target.value)} style={{ width: '100%', height: 40 }} /></label>
-              </div>
-
-              {/* Sentidos */}
-              <div style={{ marginTop: 16 }}>
-                <h4>Sentidos</h4>
-                <label>Visão Noturna<br /><input id="sense-darkvision" name="darkvision" autoComplete="off" type='text' placeholder='Ex: 60 pés' value={state.senses.darkvision} onChange={(e) => setField('senses.darkvision', e.target.value)} style={{ width: '100%' }} /></label>
-                <label style={{ marginTop: 6, display: 'block' }}>Visão Cega<br /><input id="sense-blindsight" name="blindsight" autoComplete="off" type='text' placeholder='Ex: 30 pés' value={state.senses.blindsight} onChange={(e) => setField('senses.blindsight', e.target.value)} style={{ width: '100%' }} /></label>
-                <label style={{ marginTop: 6, display: 'block' }}>Visão Verdadeira<br /><input id="sense-truesight" name="truesight" autoComplete="off" type='text' placeholder='Ex: 120 pés' value={state.senses.truesight} onChange={(e) => setField('senses.truesight', e.target.value)} style={{ width: '100%' }} /></label>
-              </div>
-
-              {/* Resistências, Imunidades, Vulnerabilidades */}
-              <div style={{ marginTop: 16 }}>
-                <h4>Resistências e Imunidades</h4>
-                <label>Resistências (Dano)<br /><textarea id="resist-damage" name="resistances" autoComplete="off" value={state.resistances.damage} onChange={(e) => setField('resistances.damage', e.target.value)} style={{ width: '100%', height: 40 }} /></label>
-                <label style={{ marginTop: 6, display: 'block' }}>Imunidades (Dano)<br /><textarea id="immun-damage" name="immunities" autoComplete="off" value={state.immunities.damage} onChange={(e) => setField('immunities.damage', e.target.value)} style={{ width: '100%', height: 40 }} /></label>
-                <label style={{ marginTop: 6, display: 'block' }}>Vulnerabilidades (Dano)<br /><textarea id="vuln-damage" name="vulnerabilities" autoComplete="off" value={state.vulnerabilities.damage} onChange={(e) => setField('vulnerabilities.damage', e.target.value)} style={{ width: '100%', height: 40 }} /></label>
-              </div>
-
-              {/* Equipamento */}
-              <div style={{ marginTop: 16 }}>
-                <h4>Equipamento</h4>
-                <textarea id="equipment" name="equipment" autoComplete="off" value={state.equipment} onChange={(e) => setField('equipment', e.target.value)} style={{ width: '100%', minHeight: 100 }} />
-              </div>
-            </div>
-
-            <div>
-              <h4>Atributos</h4>
-              {Object.keys(state.abilities).map((a) => (
-                <div key={a} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                  <div style={{ width: 36 }}>{a.toUpperCase()}</div>
-                  <input id={`ability-${a}`} name={`ability-${a}`} autoComplete="off" type='number' value={state.abilities[a]} onChange={(e) => setField(`abilities.${a}`, Number(e.target.value) || 0)} style={{ width: 60 }} />
-                  <div style={{ marginLeft: 'auto' }}>{abilityModifier(state.abilities[a]) >= 0 ? '+' : ''}{abilityModifier(state.abilities[a])}</div>
-                </div>
-              ))}
-              <div style={{ marginTop: 12, padding: 8, background: '#444', borderRadius: 4 }}>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>Proficiência</div>
-                  <div style={{ fontSize: 20, fontWeight: 'bold' }}>{prof >= 0 ? '+' : ''}{prof}</div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 12, padding: 8, background: '#333', borderRadius: 4 }}>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>CA</div>
-                  <input id="combat-ac" name="ac" autoComplete="off" type='number' value={state.ac} onChange={(e) => setField('ac', Number(e.target.value) || 10)} style={{ width: '100%', fontSize: 16, padding: 4 }} />
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>PV</div>
-                  <input id="combat-hp" name="hp" autoComplete="off" type='number' value={state.hp} onChange={(e) => setField('hp', Number(e.target.value) || 10)} style={{ width: '100%', fontSize: 16, padding: 4 }} />
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>PV Máximo</div>
-                  <input id="combat-maxhp" name="maxhp" autoComplete="off" type='number' value={state.maxHp} onChange={(e) => setField('maxHp', Number(e.target.value) || 10)} style={{ width: '100%', fontSize: 16, padding: 4 }} />
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>PV Temporário</div>
-                  <input id="combat-temphp" name="temphp" autoComplete="off" type='number' value={state.tempHp} onChange={(e) => setField('tempHp', Number(e.target.value) || 0)} style={{ width: '100%', fontSize: 16, padding: 4 }} />
+      {/* CONTEÚDO DINÂMICO */}
+      <div className="sheet-content">
+        {page === "ficha" && (
+          <>
+            {/* INFORMAÇÕES BÁSICAS */}
+            <section className="form-section">
+              <h2>Informações Básicas</h2>
+              <div className="form-grid-3">
+                <div>
+                  <label>Nome</label>
+                  <input
+                    type="text"
+                    value={state.name}
+                    onChange={(e) => setField("name", e.target.value)}
+                  />
                 </div>
                 <div>
-                  <div style={{ fontSize: 12, color: '#aaa' }}>Velocidade</div>
-                  <input id="combat-speed" name="speed" autoComplete="off" type='text' placeholder='Ex: 30 pés' value={state.speed} onChange={(e) => setField('speed', e.target.value)} style={{ width: '100%', fontSize: 16, padding: 4 }} />
+                  <label>Classe</label>
+                  <input
+                    type="text"
+                    value={state.class}
+                    onChange={(e) => setField("class", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Raça</label>
+                  <input
+                    type="text"
+                    value={state.race}
+                    onChange={(e) => setField("race", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Antecedente</label>
+                  <input
+                    type="text"
+                    value={state.background}
+                    onChange={(e) => setField("background", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Jogador</label>
+                  <input
+                    type="text"
+                    value={state.player}
+                    onChange={(e) => setField("player", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Alinhamento</label>
+                  <input
+                    type="text"
+                    value={state.alignment}
+                    onChange={(e) => setField("alignment", e.target.value)}
+                  />
                 </div>
               </div>
+            </section>
 
-              <div style={{ marginTop: 12, display: 'flex', gap: 6, flexDirection: 'column' }}>
-                <button onClick={exportJson}>Exportar</button>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '8px 12px', background: '#333', borderRadius: 4, textAlign: 'center' }}>
-                  <input type='file' accept='application/json' style={{ display: 'none' }} onChange={(e) => importJson(e.target.files && e.target.files[0])} />
-                  Importar
-                </label>
-                <button onClick={reset} style={{ background: '#500' }}>Reset</button>
+            {/* NÍVEL, XP, CA, HP */}
+            <section className="form-section">
+              <h2>Progressão e Defesa</h2>
+              <div className="form-grid-4">
+                <div>
+                  <label>Nível</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={state.level}
+                    onChange={(e) => setField("level", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>XP</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={state.experience}
+                    onChange={(e) => setField("experience", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>CA</label>
+                  <input
+                    type="number"
+                    value={state.ac}
+                    onChange={(e) => setField("ac", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>HP Atual</label>
+                  <input
+                    type="number"
+                    value={state.hp}
+                    onChange={(e) => setField("hp", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>HP Máximo</label>
+                  <input
+                    type="number"
+                    value={state.maxHp}
+                    onChange={(e) => setField("maxHp", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>HP Temporário</label>
+                  <input
+                    type="number"
+                    value={state.tempHp}
+                    onChange={(e) => setField("tempHp", Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label>Velocidade</label>
+                  <input
+                    type="text"
+                    value={state.speed}
+                    onChange={(e) => setField("speed", e.target.value)}
+                    placeholder="30 pés"
+                  />
+                </div>
+                <div>
+                  <label>Bônus de Proficiência</label>
+                  <input
+                    type="text"
+                    value={`+${prof}`}
+                    disabled
+                    className="readonly"
+                  />
+                </div>
               </div>
-            </div>
-          </div>
+            </section>
+
+            {/* ATRIBUTOS */}
+            <section className="form-section">
+              <AbilityScores
+                abilities={state.abilities}
+                onChange={(newAbilities) => setField("abilities", newAbilities)}
+              />
+            </section>
+
+            {/* HABILIDADES E TESTES */}
+            <section className="form-section">
+              <SkillsList
+                skills={state.skills}
+                proficiency={prof}
+                abilities={state.abilities}
+                onChange={(newSkills) => setField("skills", newSkills)}
+              />
+            </section>
+
+            <section className="form-section">
+              <SavingThrows
+                saves={state.savingThrows}
+                proficiency={prof}
+                abilities={state.abilities}
+                onChange={(newSaves) => setField("savingThrows", newSaves)}
+              />
+            </section>
+
+            {/* PROFICIÊNCIAS E SENTIDOS */}
+            <section className="form-section">
+              <h2>Proficiências e Sentidos</h2>
+              <div className="form-grid-2">
+                <div>
+                  <label>Linguagens</label>
+                  <textarea
+                    value={state.proficiencies.languages}
+                    onChange={(e) =>
+                      setField("proficiencies.languages", e.target.value)
+                    }
+                    placeholder="Comum, Élfico, ..."
+                  />
+                </div>
+                <div>
+                  <label>Ferramentas</label>
+                  <textarea
+                    value={state.proficiencies.tools}
+                    onChange={(e) =>
+                      setField("proficiencies.tools", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label>Armaduras</label>
+                  <textarea
+                    value={state.proficiencies.armor}
+                    onChange={(e) =>
+                      setField("proficiencies.armor", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label>Armas</label>
+                  <textarea
+                    value={state.proficiencies.weapons}
+                    onChange={(e) =>
+                      setField("proficiencies.weapons", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label>Visão no Escuro</label>
+                  <input
+                    type="text"
+                    value={state.senses.darkvision}
+                    onChange={(e) =>
+                      setField("senses.darkvision", e.target.value)
+                    }
+                    placeholder="60 pés"
+                  />
+                </div>
+                <div>
+                  <label>Visão às Cegas</label>
+                  <input
+                    type="text"
+                    value={state.senses.blindsight}
+                    onChange={(e) =>
+                      setField("senses.blindsight", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* RESISTÊNCIAS E IMUNIDADES */}
+            <section className="form-section">
+              <h2>Resistências, Imunidades e Vulnerabilidades</h2>
+              <div className="form-grid-2">
+                <div>
+                  <label>Resistência de Dano</label>
+                  <textarea
+                    value={state.resistances.damage}
+                    onChange={(e) =>
+                      setField("resistances.damage", e.target.value)
+                    }
+                    placeholder="Fogo, Frio, ..."
+                  />
+                </div>
+                <div>
+                  <label>Resistência de Condição</label>
+                  <textarea
+                    value={state.resistances.condition}
+                    onChange={(e) =>
+                      setField("resistances.condition", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label>Imunidade de Dano</label>
+                  <textarea
+                    value={state.immunities.damage}
+                    onChange={(e) => setField("immunities.damage", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Imunidade de Condição</label>
+                  <textarea
+                    value={state.immunities.condition}
+                    onChange={(e) =>
+                      setField("immunities.condition", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label>Vulnerabilidade de Dano</label>
+                  <textarea
+                    value={state.vulnerabilities.damage}
+                    onChange={(e) =>
+                      setField("vulnerabilities.damage", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* TRAÇOS, IDEAIS, LAÇOS, FALHAS */}
+            <section className="form-section">
+              <h2>Personalidade e Características</h2>
+              <div className="form-grid-2">
+                <div>
+                  <label>Traços de Personalidade</label>
+                  <textarea
+                    value={state.traits}
+                    onChange={(e) => setField("traits", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Ideais</label>
+                  <textarea
+                    value={state.ideals}
+                    onChange={(e) => setField("ideals", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Laços</label>
+                  <textarea
+                    value={state.bonds}
+                    onChange={(e) => setField("bonds", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Falhas</label>
+                  <textarea
+                    value={state.flaws}
+                    onChange={(e) => setField("flaws", e.target.value)}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* FEATURE E BACKSTORY */}
+            <section className="form-section">
+              <h2>Feature de Classe e História</h2>
+              <div className="form-grid-1">
+                <div>
+                  <label>Feature de Classe</label>
+                  <textarea
+                    value={state.feature}
+                    onChange={(e) => setField("feature", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>História do Personagem</label>
+                  <textarea
+                    value={state.backstory}
+                    onChange={(e) => setField("backstory", e.target.value)}
+                  />
+                </div>
+              </div>
+            </section>
+          </>
         )}
 
-        {page === 'antecedentes' && (
-          <div style={{ maxWidth: 800 }}>
-            <div style={{ marginBottom: 16 }}>
-              <h4>Traços de Personalidade</h4>
-              <textarea id="traits" name="traits" autoComplete="off" value={state.traits} onChange={(e) => setField('traits', e.target.value)} style={{ width: '100%', minHeight: 80 }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <h4>Ideais</h4>
-              <textarea id="ideals" name="ideals" autoComplete="off" value={state.ideals} onChange={(e) => setField('ideals', e.target.value)} style={{ width: '100%', minHeight: 80 }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <h4>Ligações</h4>
-              <textarea id="bonds" name="bonds" autoComplete="off" value={state.bonds} onChange={(e) => setField('bonds', e.target.value)} style={{ width: '100%', minHeight: 80 }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <h4>Falhas</h4>
-              <textarea id="flaws" name="flaws" autoComplete="off" value={state.flaws} onChange={(e) => setField('flaws', e.target.value)} style={{ width: '100%', minHeight: 80 }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <h4>Característica de Antecedente</h4>
-              <textarea id="feature" name="feature" autoComplete="off" value={state.feature} onChange={(e) => setField('feature', e.target.value)} style={{ width: '100%', minHeight: 80 }} />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <h4>História</h4>
-              <textarea id="backstory" name="backstory" autoComplete="off" value={state.backstory} onChange={(e) => setField('backstory', e.target.value)} style={{ width: '100%', minHeight: 200 }} />
-            </div>
-          </div>
-        )}
+        {page === "magia" && (
+          <section className="form-section">
+            <h2>Magias</h2>
 
-        {page === 'magias' && (
-          <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ flex: 1 }}>
-              <label>Habilidade de Conjuração<br />
-                <select id="spell-ability" name="spell-ability" autoComplete="off" value={state.spells.spellcastingAbility} onChange={(e) => setField('spells.spellcastingAbility', e.target.value)} style={{ width: '100%' }}>
-                  <option value=''>--</option>
-                  <option value='str'>STR</option>
-                  <option value='dex'>DEX</option>
-                  <option value='con'>CON</option>
-                  <option value='int'>INT</option>
-                  <option value='wis'>WIS</option>
-                  <option value='cha'>CHA</option>
-                </select>
-              </label>
-              <div style={{ marginTop: 12, padding: 8, background: '#333', borderRadius: 4 }}>
-                <div>Spell Save DC: <strong>{spellSaveDC}</strong></div>
-                <div style={{ marginTop: 4 }}>Spell Attack: <strong>{spellAttack}</strong></div>
+            <div className="spell-section">
+              <h3>Informações Básicas de Magia</h3>
+              <div className="form-grid-3">
+                <div>
+                  <label>Habilidade de Lançamento</label>
+                  <select
+                    value={state.spells.spellcastingAbility}
+                    onChange={(e) =>
+                      setField("spells.spellcastingAbility", e.target.value)
+                    }
+                  >
+                    <option value="">Nenhuma</option>
+                    <option value="str">Força</option>
+                    <option value="dex">Destreza</option>
+                    <option value="con">Constituição</option>
+                    <option value="int">Inteligência</option>
+                    <option value="wis">Sabedoria</option>
+                    <option value="cha">Carisma</option>
+                  </select>
+                </div>
+                <div>
+                  <label>DC de Salvação de Magia</label>
+                  <input
+                    type="text"
+                    value={spellSaveDC}
+                    disabled
+                    className="readonly"
+                  />
+                </div>
+                <div>
+                  <label>Bônus de Ataque de Magia</label>
+                  <input
+                    type="text"
+                    value={spellAttack}
+                    disabled
+                    className="readonly"
+                  />
+                </div>
               </div>
-              <div style={{ marginTop: 12 }}>
-                <h5>Slots de Magia</h5>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                  {[1,2,3,4,5,6,7,8,9].map((lvl) => (
-                    <div key={lvl} style={{ padding: 8, background: '#2a2a2a', borderRadius: 4 }}>
-                      <div style={{ fontSize: 11, color: '#aaa', marginBottom: 4 }}>Nível {lvl}</div>
-                      <input type='number' value={state.spells.slots[lvl] || 0} onChange={(e) => setSlot(lvl, e.target.value)} style={{ width: '100%', fontSize: 14 }} />
+            </div>
+
+            <div className="spell-section">
+              <h3>Adicionar Magia</h3>
+              <AddSpellForm onAdd={addSpell} />
+            </div>
+
+            {/* MAGIAS POR NÍVEL */}
+            <div className="spells-by-level">
+              <div className="spell-level">
+                <h4>Truques ({state.spells.cantrips?.length || 0})</h4>
+                <div className="spell-list">
+                  {state.spells.cantrips?.map((spell, idx) => (
+                    <div key={idx} className="spell-item">
+                      <span>{spell}</span>
+                      <button
+                        onClick={() => removeSpell("cantrips", idx)}
+                        className="btn-remove"
+                      >
+                        ✕
+                      </button>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-            <div style={{ width: 400 }}>
-              <h5>Magias</h5>
-              <AddSpellForm onAdd={(lvl, name) => addSpell(lvl, name)} />
-              <div style={{ maxHeight: 500, overflow: 'auto', marginTop: 12 }}>
-                <h6>Truques</h6>
-                <ul style={{ marginTop: 4, listStyle: 'none', padding: 0 }}>
-                  {(state.spells.cantrips || []).map((s, i) => (
-                    <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 4, background: '#2a2a2a', marginBottom: 2, borderRadius: 2 }}>
-                      {s}
-                      <button onClick={() => removeSpell('cantrips', i)} style={{ background: '#500', padding: '2px 6px', fontSize: 12 }}>rem</button>
-                    </li>
-                  ))}
-                </ul>
-                {[1,2,3,4,5,6,7,8,9].map((n) => (
-                  <div key={n} style={{ marginTop: 8 }}>
-                    <h6>Nível {n}</h6>
-                    <ul style={{ marginTop: 4, listStyle: 'none', padding: 0 }}>
-                      {(state.spells[`level${n}`] || []).map((s, i) => (
-                        <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 4, background: '#2a2a2a', marginBottom: 2, borderRadius: 2 }}>
-                          {s}
-                          <button onClick={() => removeSpell(`level${n}`, i)} style={{ background: '#500', padding: '2px 6px', fontSize: 12 }}>rem</button>
-                        </li>
+
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
+                const levelKey = `level${level}`;
+                const spells = state.spells[levelKey] || [];
+                return (
+                  <div key={levelKey} className="spell-level">
+                    <h4>
+                      Nível {level} ({spells.length})
+                    </h4>
+                    <div className="spell-list">
+                      {spells.map((spell, idx) => (
+                        <div key={idx} className="spell-item">
+                          <span>{spell}</span>
+                          <button
+                            onClick={() => removeSpell(levelKey, idx)}
+                            className="btn-remove"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {page === "equipment" && (
+          <section className="form-section">
+            <h2>Equipamento</h2>
+            <div className="form-grid-1">
+              <div>
+                <label>Equipamento</label>
+                <textarea
+                  value={state.equipment}
+                  onChange={(e) => setField("equipment", e.target.value)}
+                  style={{ minHeight: "300px" }}
+                />
               </div>
             </div>
-          </div>
+          </section>
+        )}
+
+        {page === "notes" && (
+          <section className="form-section">
+            <h2>Anotações</h2>
+            <div className="form-grid-1">
+              <div>
+                <label>Notas Gerais</label>
+                <textarea
+                  placeholder="Anotações livres..."
+                  style={{ minHeight: "300px" }}
+                />
+              </div>
+            </div>
+          </section>
         )}
       </div>
+
+      {/* CONTROLES GLOBAIS */}
+      <footer className="sheet-footer">
+        <button onClick={reset} className="btn-reset">
+          Limpar Ficha
+        </button>
+        <button onClick={exportJson} className="btn-export">
+          Exportar JSON
+        </button>
+        <label className="btn-import">
+          Importar JSON
+          <input
+            type="file"
+            accept=".json"
+            onChange={(e) => importJson(e.target.files?.[0])}
+            style={{ display: "none" }}
+          />
+        </label>
+      </footer>
     </div>
   );
 }
 
+
+/* =======================
+   Subcomponente
+======================= */
+
 function AddSpellForm({ onAdd }) {
-  const [level, setLevel] = useState('cantrips');
-  const [name, setName] = useState('');
+  const [level, setLevel] = useState("cantrips");
+  const [name, setName] = useState("");
+
   return (
-    <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
-      <select id="spell-level" name="spell-level" autoComplete="off" value={level} onChange={(e) => setLevel(e.target.value)} style={{ width: '100%' }}>
-        <option value='cantrips'>Truque</option>
-        {[1,2,3,4,5,6,7,8,9].map((n) => <option key={n} value={`level${n}`}>Nível {n}</option>)}
+    <div>
+      <select value={level} onChange={e => setLevel(e.target.value)}>
+        <option value="cantrips">Truque</option>
+        {[1,2,3,4,5,6,7,8,9].map(n =>
+          <option key={n} value={`level${n}`}>Nível {n}</option>
+        )}
       </select>
-      <input id="spell-name" name="spell-name" autoComplete="off" placeholder='Nome da magia' value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%' }} />
-      <button onClick={() => { if (name.trim()) { onAdd(level, name.trim()); setName(''); } }}>Adicionar Magia</button>
+
+      <input
+        placeholder="Nome da magia"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+
+      <button onClick={() => {
+        if (!name.trim()) return;
+        onAdd(level, name.trim());
+        setName("");
+      }}>
+        Adicionar Magia
+      </button>
     </div>
   );
 }
