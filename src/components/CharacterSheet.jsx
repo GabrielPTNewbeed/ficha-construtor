@@ -68,10 +68,24 @@ export default function CharacterSheet() {
   });
 
   const [page, setPage] = useState("ficha");
+  const [editMode, setEditMode] = useState(false);
+  
+  const [customLabels, setCustomLabels] = useState(() => {
+    try {
+      const raw = localStorage.getItem("customLabels");
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  });
 
   useEffect(() => {
     localStorage.setItem("characterSheet", JSON.stringify(state));
   }, [state]);
+
+  useEffect(() => {
+    localStorage.setItem("customLabels", JSON.stringify(customLabels));
+  }, [customLabels]);
 
   const prof = useMemo(
     () => profBonusFromLevel(state.level),
@@ -95,6 +109,21 @@ export default function CharacterSheet() {
   };
 
   const reset = () => setState(structuredClone(defaultState));
+
+  const getLabel = (key, defaultLabel) => {
+    return customLabels[key] || defaultLabel;
+  };
+
+  const setLabel = (key, newLabel) => {
+    setCustomLabels(prev => ({
+      ...prev,
+      [key]: newLabel
+    }));
+  };
+
+  const resetAllLabels = () => {
+    setCustomLabels({});
+  };
 
   const exportJson = () => {
     const blob = new Blob(
@@ -177,6 +206,14 @@ export default function CharacterSheet() {
         >
           Anotações
         </button>
+
+        <button
+          onClick={() => setEditMode(!editMode)}
+          className={`tab tab-edit ${editMode ? "active" : ""}`}
+          title={editMode ? "Desativar modo de edição" : "Ativar modo de edição"}
+        >
+          {editMode ? "✓ Editando" : "🔒 Editar"}
+        </button>
       </nav>
 
       {/* CONTEÚDO DINÂMICO */}
@@ -185,54 +222,145 @@ export default function CharacterSheet() {
           <>
             {/* INFORMAÇÕES BÁSICAS */}
             <section className="form-section">
-              <h2>Informações Básicas</h2>
+              <div className="form-section-header">
+                <h2>Informações Básicas</h2>
+                {editMode && (
+                  <button className="btn-reset-labels" onClick={resetAllLabels}>
+                    Resetar Labels
+                  </button>
+                )}
+              </div>
               <div className="form-grid-3">
-                <div>
-                  <label>Nome</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("nome", "Nome")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Nome':", getLabel("nome", "Nome"));
+                          if (newName) setLabel("nome", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.name}
                     onChange={(e) => setField("name", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
-                <div>
-                  <label>Classe</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("classe", "Classe")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Classe':", getLabel("classe", "Classe"));
+                          if (newName) setLabel("classe", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.class}
                     onChange={(e) => setField("class", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
-                <div>
-                  <label>Raça</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("raca", "Raça")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Raça':", getLabel("raca", "Raça"));
+                          if (newName) setLabel("raca", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.race}
                     onChange={(e) => setField("race", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
-                <div>
-                  <label>Antecedente</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("antecedente", "Antecedente")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Antecedente':", getLabel("antecedente", "Antecedente"));
+                          if (newName) setLabel("antecedente", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.background}
                     onChange={(e) => setField("background", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
-                <div>
-                  <label>Jogador</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("jogador", "Jogador")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Jogador':", getLabel("jogador", "Jogador"));
+                          if (newName) setLabel("jogador", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.player}
                     onChange={(e) => setField("player", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
-                <div>
-                  <label>Alinhamento</label>
+                <div className={editMode ? "field-editable" : ""}>
+                  <label className={editMode ? "label-editable" : ""}>
+                    {getLabel("alinhamento", "Alinhamento")}
+                    {editMode && (
+                      <button
+                        className="btn-rename-inline"
+                        onClick={() => {
+                          const newName = prompt("Renomear 'Alinhamento':", getLabel("alinhamento", "Alinhamento"));
+                          if (newName) setLabel("alinhamento", newName);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    )}
+                  </label>
                   <input
                     type="text"
                     value={state.alignment}
                     onChange={(e) => setField("alignment", e.target.value)}
+                    disabled={editMode}
                   />
                 </div>
               </div>

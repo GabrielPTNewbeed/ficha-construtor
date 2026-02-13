@@ -65,6 +65,17 @@ html, body, #root {
   background: #0f1724;
 }
 
+.tab-edit {
+  margin-left: auto;
+  background: #1a1a1a;
+}
+
+.tab-edit.active {
+  background: #646cff;
+  color: #000;
+  font-weight: 600;
+}
+
 /* CONTENT AREA */
 .sheet-content {
   flex: 1;
@@ -380,5 +391,134 @@ html, body, #root {
   .sheet-content {
     padding: 8px;
   }
+}
+
+/* EDIT MODE STYLES */
+.form-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.form-section-header h2 {
+  margin: 0 0 16px 0;
+  flex: 1;
+}
+
+.btn-reset-labels {
+  padding: 6px 12px;
+  background: #ff9800;
+  border: none;
+  color: #000;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+.btn-reset-labels:hover {
+  background: #ffb74d;
+}
+
+.field-editable {
+  opacity: 0.8;
+  border-left: 3px solid #646cff;
+  padding-left: 8px;
+}
+
+.label-editable {
+  color: #646cff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-rename-inline {
+  background: none;
+  border: none;
+  color: #646cff;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 1em;
+  display: inline-flex;
+  align-items: center;
+  hover: color #ffd700;
+}
+
+.btn-rename-inline:hover {
+  color: #ffd700;
+}
+
+.field-editable input:disabled,
+.field-editable textarea:disabled {
+  background-color: #0a0a0a;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* EDITABLE FIELD COMPONENT */
+.editable-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.editable-field.edit-mode {
+  background: rgba(100, 108, 255, 0.1);
+  border: 2px dashed #646cff;
+  cursor: grab;
+  user-select: none;
+}
+
+.editable-field.edit-mode:active {
+  cursor: grabbing;
+  opacity: 0.7;
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field-header label {
+  font-weight: 500;
+  color: #ddd;
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.label-edit {
+  display: flex;
+  flex: 1;
+}
+
+.label-input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  background: #1a1a1a;
+  border: 1px solid #646cff;
+  color: #ddd;
+  border-radius: 3px;
+}
+
+.move-indicator {
+  font-size: 1.2em;
+  color: #646cff;
+  font-weight: bold;
+}
+
+.edit-indicators {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
