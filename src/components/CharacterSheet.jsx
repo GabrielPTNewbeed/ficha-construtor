@@ -3,6 +3,7 @@ import { DND5E_SKILLS, DND5E_SAVES } from "../sheets/dnd5e.rules";
 import AbilityScores from "./AbilityScores";
 import SkillsList from "./SkillsList";
 import SavingThrows from "./SavingThrows";
+import EditableLabel from "./EditableLabel";
 
 /* =======================
    Funções utilitárias
@@ -223,7 +224,14 @@ export default function CharacterSheet() {
             {/* INFORMAÇÕES BÁSICAS */}
             <section className="form-section">
               <div className="form-section-header">
-                <h2>Informações Básicas</h2>
+                <EditableLabel
+                  labelKey="sec-info-basicas"
+                  defaultLabel="Informações Básicas"
+                  customLabels={customLabels}
+                  setLabel={setLabel}
+                  editMode={editMode}
+                  isHeading={true}
+                />
                 {editMode && (
                   <button className="btn-reset-labels" onClick={resetAllLabels}>
                     Resetar Labels
@@ -232,20 +240,13 @@ export default function CharacterSheet() {
               </div>
               <div className="form-grid-3">
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("nome", "Nome")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Nome':", getLabel("nome", "Nome"));
-                          if (newName) setLabel("nome", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="nome"
+                    defaultLabel="Nome"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.name}
@@ -254,20 +255,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("classe", "Classe")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Classe':", getLabel("classe", "Classe"));
-                          if (newName) setLabel("classe", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="classe"
+                    defaultLabel="Classe"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.class}
@@ -276,20 +270,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("raca", "Raça")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Raça':", getLabel("raca", "Raça"));
-                          if (newName) setLabel("raca", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="raca"
+                    defaultLabel="Raça"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.race}
@@ -298,20 +285,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("antecedente", "Antecedente")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Antecedente':", getLabel("antecedente", "Antecedente"));
-                          if (newName) setLabel("antecedente", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="antecedente"
+                    defaultLabel="Antecedente"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.background}
@@ -320,20 +300,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("jogador", "Jogador")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Jogador':", getLabel("jogador", "Jogador"));
-                          if (newName) setLabel("jogador", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="jogador"
+                    defaultLabel="Jogador"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.player}
@@ -342,20 +315,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div className={editMode ? "field-editable" : ""}>
-                  <label className={editMode ? "label-editable" : ""}>
-                    {getLabel("alinhamento", "Alinhamento")}
-                    {editMode && (
-                      <button
-                        className="btn-rename-inline"
-                        onClick={() => {
-                          const newName = prompt("Renomear 'Alinhamento':", getLabel("alinhamento", "Alinhamento"));
-                          if (newName) setLabel("alinhamento", newName);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                    )}
-                  </label>
+                  <EditableLabel
+                    labelKey="alinhamento"
+                    defaultLabel="Alinhamento"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.alignment}
@@ -368,10 +334,23 @@ export default function CharacterSheet() {
 
             {/* NÍVEL, XP, CA, HP */}
             <section className="form-section">
-              <h2>Progressão e Defesa</h2>
+              <EditableLabel
+                labelKey="sec-prog-defesa"
+                defaultLabel="Progressão e Defesa"
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
+                isHeading={true}
+              />
               <div className="form-grid-4">
                 <div>
-                  <label>Nível</label>
+                  <EditableLabel
+                    labelKey="nivel"
+                    defaultLabel="Nível"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     min="1"
@@ -381,7 +360,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>XP</label>
+                  <EditableLabel
+                    labelKey="xp"
+                    defaultLabel="XP"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     min="0"
@@ -390,7 +375,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>CA</label>
+                  <EditableLabel
+                    labelKey="ca"
+                    defaultLabel="CA"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     value={state.ac}
@@ -398,7 +389,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>HP Atual</label>
+                  <EditableLabel
+                    labelKey="hp-atual"
+                    defaultLabel="HP Atual"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     value={state.hp}
@@ -406,7 +403,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>HP Máximo</label>
+                  <EditableLabel
+                    labelKey="hp-maximo"
+                    defaultLabel="HP Máximo"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     value={state.maxHp}
@@ -414,7 +417,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>HP Temporário</label>
+                  <EditableLabel
+                    labelKey="hp-temporario"
+                    defaultLabel="HP Temporário"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="number"
                     value={state.tempHp}
@@ -422,7 +431,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Velocidade</label>
+                  <EditableLabel
+                    labelKey="velocidade"
+                    defaultLabel="Velocidade"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.speed}
@@ -431,7 +446,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Bônus de Proficiência</label>
+                  <EditableLabel
+                    labelKey="bonus-prof"
+                    defaultLabel="Bônus de Proficiência"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={`+${prof}`}
@@ -447,6 +468,9 @@ export default function CharacterSheet() {
               <AbilityScores
                 abilities={state.abilities}
                 onChange={(newAbilities) => setField("abilities", newAbilities)}
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
               />
             </section>
 
@@ -457,6 +481,9 @@ export default function CharacterSheet() {
                 proficiency={prof}
                 abilities={state.abilities}
                 onChange={(newSkills) => setField("skills", newSkills)}
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
               />
             </section>
 
@@ -466,15 +493,31 @@ export default function CharacterSheet() {
                 proficiency={prof}
                 abilities={state.abilities}
                 onChange={(newSaves) => setField("savingThrows", newSaves)}
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
               />
             </section>
 
             {/* PROFICIÊNCIAS E SENTIDOS */}
             <section className="form-section">
-              <h2>Proficiências e Sentidos</h2>
+              <EditableLabel
+                labelKey="sec-proficiencias"
+                defaultLabel="Proficiências e Sentidos"
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
+                isHeading={true}
+              />
               <div className="form-grid-2">
                 <div>
-                  <label>Linguagens</label>
+                  <EditableLabel
+                    labelKey="prof-linguagens"
+                    defaultLabel="Linguagens"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.proficiencies.languages}
                     onChange={(e) =>
@@ -484,7 +527,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Ferramentas</label>
+                  <EditableLabel
+                    labelKey="prof-ferramentas"
+                    defaultLabel="Ferramentas"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.proficiencies.tools}
                     onChange={(e) =>
@@ -493,7 +542,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Armaduras</label>
+                  <EditableLabel
+                    labelKey="prof-armaduras"
+                    defaultLabel="Armaduras"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.proficiencies.armor}
                     onChange={(e) =>
@@ -502,7 +557,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Armas</label>
+                  <EditableLabel
+                    labelKey="prof-armas"
+                    defaultLabel="Armas"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.proficiencies.weapons}
                     onChange={(e) =>
@@ -511,7 +572,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Visão no Escuro</label>
+                  <EditableLabel
+                    labelKey="sentido-darkvision"
+                    defaultLabel="Visão no Escuro"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.senses.darkvision}
@@ -522,7 +589,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Visão às Cegas</label>
+                  <EditableLabel
+                    labelKey="sentido-blindsight"
+                    defaultLabel="Visão às Cegas"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={state.senses.blindsight}
@@ -536,10 +609,23 @@ export default function CharacterSheet() {
 
             {/* RESISTÊNCIAS E IMUNIDADES */}
             <section className="form-section">
-              <h2>Resistências, Imunidades e Vulnerabilidades</h2>
+              <EditableLabel
+                labelKey="sec-resistencias"
+                defaultLabel="Resistências, Imunidades e Vulnerabilidades"
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
+                isHeading={true}
+              />
               <div className="form-grid-2">
                 <div>
-                  <label>Resistência de Dano</label>
+                  <EditableLabel
+                    labelKey="res-dano"
+                    defaultLabel="Resistência de Dano"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.resistances.damage}
                     onChange={(e) =>
@@ -549,7 +635,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Resistência de Condição</label>
+                  <EditableLabel
+                    labelKey="res-condicao"
+                    defaultLabel="Resistência de Condição"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.resistances.condition}
                     onChange={(e) =>
@@ -558,14 +650,26 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Imunidade de Dano</label>
+                  <EditableLabel
+                    labelKey="imun-dano"
+                    defaultLabel="Imunidade de Dano"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.immunities.damage}
                     onChange={(e) => setField("immunities.damage", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label>Imunidade de Condição</label>
+                  <EditableLabel
+                    labelKey="imun-condicao"
+                    defaultLabel="Imunidade de Condição"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.immunities.condition}
                     onChange={(e) =>
@@ -574,7 +678,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Vulnerabilidade de Dano</label>
+                  <EditableLabel
+                    labelKey="vuln-dano"
+                    defaultLabel="Vulnerabilidade de Dano"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.vulnerabilities.damage}
                     onChange={(e) =>
@@ -587,31 +697,62 @@ export default function CharacterSheet() {
 
             {/* TRAÇOS, IDEAIS, LAÇOS, FALHAS */}
             <section className="form-section">
-              <h2>Personalidade e Características</h2>
+              <EditableLabel
+                labelKey="sec-personalidade"
+                defaultLabel="Personalidade e Características"
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
+                isHeading={true}
+              />
               <div className="form-grid-2">
                 <div>
-                  <label>Traços de Personalidade</label>
+                  <EditableLabel
+                    labelKey="tracos"
+                    defaultLabel="Traços de Personalidade"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.traits}
                     onChange={(e) => setField("traits", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label>Ideais</label>
+                  <EditableLabel
+                    labelKey="ideais"
+                    defaultLabel="Ideais"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.ideals}
                     onChange={(e) => setField("ideals", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label>Laços</label>
+                  <EditableLabel
+                    labelKey="lacos"
+                    defaultLabel="Laços"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.bonds}
                     onChange={(e) => setField("bonds", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label>Falhas</label>
+                  <EditableLabel
+                    labelKey="falhas"
+                    defaultLabel="Falhas"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.flaws}
                     onChange={(e) => setField("flaws", e.target.value)}
@@ -622,17 +763,36 @@ export default function CharacterSheet() {
 
             {/* FEATURE E BACKSTORY */}
             <section className="form-section">
-              <h2>Feature de Classe e História</h2>
+              <EditableLabel
+                labelKey="sec-feature"
+                defaultLabel="Feature de Classe e História"
+                customLabels={customLabels}
+                setLabel={setLabel}
+                editMode={editMode}
+                isHeading={true}
+              />
               <div className="form-grid-1">
                 <div>
-                  <label>Feature de Classe</label>
+                  <EditableLabel
+                    labelKey="feature"
+                    defaultLabel="Feature de Classe"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.feature}
                     onChange={(e) => setField("feature", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label>História do Personagem</label>
+                  <EditableLabel
+                    labelKey="backstory"
+                    defaultLabel="História do Personagem"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <textarea
                     value={state.backstory}
                     onChange={(e) => setField("backstory", e.target.value)}
@@ -645,13 +805,34 @@ export default function CharacterSheet() {
 
         {page === "magia" && (
           <section className="form-section">
-            <h2>Magias</h2>
+            <EditableLabel
+              labelKey="sec-magias"
+              defaultLabel="Magias"
+              customLabels={customLabels}
+              setLabel={setLabel}
+              editMode={editMode}
+              isHeading={true}
+            />
 
             <div className="spell-section">
-              <h3>Informações Básicas de Magia</h3>
+              <h3>
+                <EditableLabel
+                  labelKey="mag-info-basica"
+                  defaultLabel="Informações Básicas de Magia"
+                  customLabels={customLabels}
+                  setLabel={setLabel}
+                  editMode={editMode}
+                />
+              </h3>
               <div className="form-grid-3">
                 <div>
-                  <label>Habilidade de Lançamento</label>
+                  <EditableLabel
+                    labelKey="mag-habil-lancamento"
+                    defaultLabel="Habilidade de Lançamento"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <select
                     value={state.spells.spellcastingAbility}
                     onChange={(e) =>
@@ -668,7 +849,13 @@ export default function CharacterSheet() {
                   </select>
                 </div>
                 <div>
-                  <label>DC de Salvação de Magia</label>
+                  <EditableLabel
+                    labelKey="mag-dc-salvacao"
+                    defaultLabel="DC de Salvação de Magia"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={spellSaveDC}
@@ -677,7 +864,13 @@ export default function CharacterSheet() {
                   />
                 </div>
                 <div>
-                  <label>Bônus de Ataque de Magia</label>
+                  <EditableLabel
+                    labelKey="mag-bonus-ataque"
+                    defaultLabel="Bônus de Ataque de Magia"
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
                   <input
                     type="text"
                     value={spellAttack}
@@ -689,7 +882,15 @@ export default function CharacterSheet() {
             </div>
 
             <div className="spell-section">
-              <h3>Adicionar Magia</h3>
+              <h3>
+                <EditableLabel
+                  labelKey="mag-adicionar"
+                  defaultLabel="Adicionar Magia"
+                  customLabels={customLabels}
+                  setLabel={setLabel}
+                  editMode={editMode}
+                />
+              </h3>
               <AddSpellForm onAdd={addSpell} />
             </div>
 
@@ -742,10 +943,23 @@ export default function CharacterSheet() {
 
         {page === "equipment" && (
           <section className="form-section">
-            <h2>Equipamento</h2>
+            <EditableLabel
+              labelKey="sec-equipamento"
+              defaultLabel="Equipamento"
+              customLabels={customLabels}
+              setLabel={setLabel}
+              editMode={editMode}
+              isHeading={true}
+            />
             <div className="form-grid-1">
               <div>
-                <label>Equipamento</label>
+                <EditableLabel
+                  labelKey="equip-listagem"
+                  defaultLabel="Equipamento"
+                  customLabels={customLabels}
+                  setLabel={setLabel}
+                  editMode={editMode}
+                />
                 <textarea
                   value={state.equipment}
                   onChange={(e) => setField("equipment", e.target.value)}
@@ -758,10 +972,23 @@ export default function CharacterSheet() {
 
         {page === "notes" && (
           <section className="form-section">
-            <h2>Anotações</h2>
+            <EditableLabel
+              labelKey="sec-anotacoes"
+              defaultLabel="Anotações"
+              customLabels={customLabels}
+              setLabel={setLabel}
+              editMode={editMode}
+              isHeading={true}
+            />
             <div className="form-grid-1">
               <div>
-                <label>Notas Gerais</label>
+                <EditableLabel
+                  labelKey="anotacoes-gerais"
+                  defaultLabel="Notas Gerais"
+                  customLabels={customLabels}
+                  setLabel={setLabel}
+                  editMode={editMode}
+                />
                 <textarea
                   placeholder="Anotações livres..."
                   style={{ minHeight: "300px" }}

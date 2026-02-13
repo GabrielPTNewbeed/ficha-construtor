@@ -522,3 +522,20 @@ html, body, #root {
   align-items: center;
 }
 
+.editable-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.editable-heading h2 {
+  margin: 0;
+  flex: 1;
+}
+
+.editable-heading h3 {
+  margin: 0;
+  flex: 1;
+}
+

@@ -1,13 +1,29 @@
 import { DND5E_SKILLS } from "../sheets/dnd5e.rules";
+import EditableLabel from "./EditableLabel";
 
 function abilityModifier(score = 10) {
   return Math.floor((Number(score) - 10) / 2);
 }
 
-export default function SkillsList({ skills, proficiency, abilities, onChange }) {
+export default function SkillsList({
+  skills,
+  proficiency,
+  abilities,
+  onChange,
+  customLabels = {},
+  setLabel = () => {},
+  editMode = false
+}) {
   return (
     <div className="skills-section">
-      <h3>Habilidades</h3>
+      <EditableLabel
+        labelKey="sec-habilidades"
+        defaultLabel="Habilidades"
+        customLabels={customLabels}
+        setLabel={setLabel}
+        editMode={editMode}
+        isHeading={true}
+      />
       <div className="skills-grid">
         {DND5E_SKILLS.map((skill) => {
           const abilityScore = abilities[skill.ability] || 10;
@@ -27,7 +43,15 @@ export default function SkillsList({ skills, proficiency, abilities, onChange })
                   }
                   className="skill-checkbox"
                 />
-                <span className="skill-name">{skill.label}</span>
+                <span className="skill-name">
+                  <EditableLabel
+                    labelKey={`skill-${skill.id}`}
+                    defaultLabel={skill.label}
+                    customLabels={customLabels}
+                    setLabel={setLabel}
+                    editMode={editMode}
+                  />
+                </span>
                 <span className="skill-ability">({skill.ability.toUpperCase()})</span>
               </label>
               <span className="skill-mod">{modStr}</span>
