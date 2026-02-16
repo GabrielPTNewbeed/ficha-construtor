@@ -111,9 +111,9 @@ export default function CharacterSheet() {
 
   const reset = () => setState(structuredClone(defaultState));
 
-  const getLabel = (key, defaultLabel) => {
-    return customLabels[key] || defaultLabel;
-  };
+  // const getLabel = (key, defaultLabel) => {
+  //   return customLabels[key] || defaultLabel;
+  // };
 
   const setLabel = (key, newLabel) => {
     setCustomLabels(prev => ({
