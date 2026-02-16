@@ -300,14 +300,15 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               gap: "6px",
               maxHeight: "120px",
               overflowY: "auto",
-              border: "1px solid #ddd",
+              border: "1px solid #999",
               borderRadius: "4px",
-              padding: "8px"
+              padding: "8px",
+              backgroundColor: "#f9f9f9"
             }}>
               {allWidgets
                 .filter(w => w.id !== widget?.id)
                 .map(w => (
-                  <label key={w.id} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "12px" }}>
+                  <label key={w.id} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "12px", color: "#222", fontWeight: "500" }}>
                     <input
                       type="checkbox"
                       checked={formData.dependsOn?.includes(w.id) || false}

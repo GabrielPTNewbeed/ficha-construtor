@@ -57,20 +57,37 @@ export default function CanvasSheet() {
 
   const getValue = useCallback((widgetId) => {
     const widget = widgets.find(w => w.id === widgetId);
-    return widget ? widget.value : 0;
+    if (!widget) {
+      console.warn(`Widget not found: ${widgetId}`);
+      return 0;
+    }
+    const value = Number(widget.value);
+    return isNaN(value) ? 0 : value;
   }, [widgets]);
 
   const evaluateFormula = useCallback((formula) => {
+    if (!formula || formula.trim() === "") {
+      return 0;
+    }
     try {
-      return evaluate(formula, {
+      const result = evaluate(formula, {
         getValue,
         floor: Math.floor,
         ceil: Math.ceil,
-        round: Math.round
+        round: Math.round,
+        abs: Math.abs,
+        max: Math.max,
+        min: Math.min
       });
+      
+      // Retornar número ou string, garantindo formato legível
+      if (typeof result === 'number') {
+        return Math.round(result * 100) / 100; // 2 casas decimais
+      }
+      return result;
     } catch (error) {
-      console.error(`Error evaluating formula "${formula}":`, error);
-      return "ERROR";
+      console.error(`Error evaluating formula "${formula}":`, error.message);
+      return `ERROR: ${error.message}`;
     }
   }, [getValue]);
 
@@ -159,19 +176,26 @@ export default function CanvasSheet() {
     // Campo calculado: apenas exibição
     if (widget.type === "calculated") {
       const result = evaluateFormula(widget.formula);
+      const isError = typeof result === 'string' && result.startsWith('ERROR');
+      
       return (
         <div
           style={{
             ...commonStyle,
-            backgroundColor: "#f0f0f0",
+            backgroundColor: isError ? "#ffebee" : "#f0f0f0",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontWeight: "bold",
-            fontSize: "18px",
+            fontSize: isError ? "12px" : "18px",
             cursor: "default",
-            border: "1px solid #bbb"
+            border: isError ? "2px solid #f44336" : "1px solid #bbb",
+            color: isError ? "#c62828" : "#333",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+            padding: "8px"
           }}
+          title={isError ? result : ""}
         >
           {result}
         </div>
