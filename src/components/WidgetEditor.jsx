@@ -113,7 +113,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
       }}>
         {/* ID (readonly) */}
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
             ID
           </label>
           <input
@@ -126,14 +126,15 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               border: "1px solid #ddd",
               borderRadius: "4px",
               backgroundColor: "#f5f5f5",
-              fontSize: "12px"
+              fontSize: "12px",
+              color: "#666"
             }}
           />
         </div>
 
         {/* Label */}
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
             Label/Title
           </label>
           <input
@@ -143,16 +144,18 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
             style={{
               width: "100%",
               padding: "8px",
-              border: "1px solid #ddd",
+              border: "1px solid #bbb",
               borderRadius: "4px",
-              fontSize: "14px"
+              fontSize: "14px",
+              color: "#000",
+              backgroundColor: "#fff"
             }}
           />
         </div>
 
         {/* Type */}
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+          <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
             Type
           </label>
           <select
@@ -161,9 +164,11 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
             style={{
               width: "100%",
               padding: "8px",
-              border: "1px solid #ddd",
+              border: "1px solid #bbb",
               borderRadius: "4px",
-              fontSize: "14px"
+              fontSize: "14px",
+              color: "#000",
+              backgroundColor: "#fff"
             }}
           >
             {WIDGET_TYPES.map(t => (
@@ -175,7 +180,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
         {/* Value (não para calculated) */}
         {formData.type !== "calculated" && (
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Default Value
             </label>
             {formData.type === "checkbox" ? (
@@ -193,9 +198,11 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
                 style={{
                   width: "100%",
                   padding: "8px",
-                  border: "1px solid #ddd",
+                  border: "1px solid #bbb",
                   borderRadius: "4px",
-                  fontSize: "14px"
+                  fontSize: "14px",
+                  color: "#000",
+                  backgroundColor: "#fff"
                 }}
               />
             )}
@@ -205,7 +212,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
         {/* Formula (apenas para calculated) */}
         {formData.type === "calculated" && (
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Formula
             </label>
             <textarea
@@ -215,12 +222,14 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               style={{
                 width: "100%",
                 padding: "8px",
-                border: "1px solid #ddd",
+                border: "1px solid #bbb",
                 borderRadius: "4px",
                 fontSize: "12px",
                 fontFamily: "monospace",
                 minHeight: "80px",
-                resize: "vertical"
+                resize: "vertical",
+                color: "#000",
+                backgroundColor: "#fff"
               }}
             />
           </div>
@@ -229,7 +238,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
         {/* Options (para select/radio) */}
         {["select", "radio"].includes(formData.type) && (
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Options (one per line)
             </label>
             <textarea
@@ -239,12 +248,14 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               style={{
                 width: "100%",
                 padding: "8px",
-                border: "1px solid #ddd",
+                border: "1px solid #bbb",
                 borderRadius: "4px",
                 fontSize: "12px",
                 fontFamily: "monospace",
                 minHeight: "100px",
-                resize: "vertical"
+                resize: "vertical",
+                color: "#000",
+                backgroundColor: "#fff"
               }}
             />
           </div>
@@ -253,7 +264,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
         {/* Size */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Width
             </label>
             <input
@@ -263,14 +274,16 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               style={{
                 width: "100%",
                 padding: "8px",
-                border: "1px solid #ddd",
+                border: "1px solid #bbb",
                 borderRadius: "4px",
-                fontSize: "14px"
+                fontSize: "14px",
+                color: "#000",
+                backgroundColor: "#fff"
               }}
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Height
             </label>
             <input
@@ -280,9 +293,11 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
               style={{
                 width: "100%",
                 padding: "8px",
-                border: "1px solid #ddd",
+                border: "1px solid #bbb",
                 borderRadius: "4px",
-                fontSize: "14px"
+                fontSize: "14px",
+                color: "#000",
+                backgroundColor: "#fff"
               }}
             />
           </div>
@@ -291,7 +306,7 @@ export default function WidgetEditor({ widget, onSave, onClose, onDelete, allWid
         {/* Dependencies */}
         {widget && (
           <div>
-            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px" }}>
+            <label style={{ display: "block", marginBottom: "4px", fontWeight: "bold", fontSize: "12px", color: "#000" }}>
               Depends On (for calculations)
             </label>
             <div style={{
