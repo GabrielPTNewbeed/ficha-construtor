@@ -1,0 +1,622 @@
+/* ============================================================================
+   APP STYLES - AppExample.tsx
+   ============================================================================ */
+
+.xcom-app {
+  --primary: #00BFFF;
+  --secondary: #FF4500;
+  --bg-dark: #0a0e27;
+  --bg-light: #14193a;
+  --border: rgba(0, 191, 255, 0.3);
+  --text: #00BFFF;
+  --text-secondary: rgba(0, 191, 255, 0.7);
+  --glow: 0 0 20px rgba(0, 191, 255, 0.3);
+}
+
+.xcom-app.xcom-light {
+  --primary: #0080ff;
+  --secondary: #ff6600;
+  --bg-dark: #f0f2f5;
+  --bg-light: #ffffff;
+  --border: rgba(0, 128, 255, 0.2);
+  --text: #0080ff;
+  --text-secondary: rgba(0, 128, 255, 0.6);
+  --glow: 0 0 15px rgba(0, 128, 255, 0.2);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.xcom-app {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(90deg, rgba(0, 191, 255, 0.1) 0%, rgba(15, 21, 53, 0.5) 100%);
+  border-bottom: 2px solid var(--border);
+  box-shadow: var(--glow);
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px var(--glow);
+  white-space: nowrap;
+}
+
+.btn-toggle-nav {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  display: none;
+}
+
+.btn-toggle-nav:hover {
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-name {
+  font-weight: bold;
+  color: var(--primary);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-edit {
+  padding: 10px 20px;
+  background: rgba(0, 191, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s;
+}
+
+.btn-edit:hover {
+  background: rgba(0, 191, 255, 0.1);
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+}
+
+.btn-edit.active {
+  background: var(--primary);
+  color: #000;
+  box-shadow: var(--glow);
+}
+
+.theme-select {
+  padding: 8px 12px;
+  background: rgba(0, 191, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+  font-family: 'Orbitron', monospace;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.theme-select:hover {
+  border-color: var(--primary);
+}
+
+.theme-select:focus {
+  outline: none;
+  box-shadow: var(--glow);
+}
+
+/* ============================================================================
+   MAIN LAYOUT
+   ============================================================================ */
+
+.app-layout {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  overflow: hidden;
+}
+
+.app-sidebar {
+  width: 300px;
+  background: linear-gradient(180deg, rgba(10, 14, 39, 0.8) 0%, rgba(20, 25, 58, 0.6) 100%);
+  border-right: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: inset -10px 0 20px rgba(0, 191, 255, 0.05);
+}
+
+.app-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 191, 255, 0.2);
+  border-radius: 3px;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 191, 255, 0.4);
+}
+
+.sidebar-section {
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+}
+
+.sidebar-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text);
+  text-shadow: 0 0 5px rgba(0, 191, 255, 0.3);
+}
+
+/* ============================================================================
+   TEMPLATES
+   ============================================================================ */
+
+.templates-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-template {
+  padding: 12px;
+  background: rgba(0, 191, 255, 0.05);
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  color: var(--text);
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  text-align: left;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-template:hover {
+  background: rgba(0, 191, 255, 0.1);
+  border-color: var(--primary);
+  transform: translateX(5px);
+  box-shadow: var(--glow);
+}
+
+.btn-template:active {
+  transform: translateX(3px);
+}
+
+/* ============================================================================
+   CHARACTERS LIST
+   ============================================================================ */
+
+.characters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 20px 0;
+  font-style: italic;
+}
+
+.character-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(0, 191, 255, 0.02);
+  transition: all 0.2s;
+}
+
+.character-card:hover {
+  background: rgba(0, 191, 255, 0.05);
+  border-color: rgba(0, 191, 255, 0.3);
+}
+
+.character-card.active {
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.1), rgba(0, 191, 255, 0.05));
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+}
+
+.char-select {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.char-info strong {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.char-info small {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.character-card.active .char-info strong {
+  color: var(--primary);
+}
+
+.char-actions {
+  display: flex;
+  gap: 3px;
+  padding: 0 8px;
+  visibility: hidden;
+}
+
+.character-card.active .char-actions {
+  visibility: visible;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  border-radius: 2px;
+}
+
+.action-btn:hover {
+  color: var(--text);
+  background: rgba(0, 191, 255, 0.1);
+}
+
+.action-btn.delete:hover {
+  color: #ff6666;
+  background: rgba(255, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   IMPORT & ACTIONS
+   ============================================================================ */
+
+.btn-import {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 69, 0, 0.05);
+  border: 1px solid rgba(255, 69, 0, 0.2);
+  color: #FF4500;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.btn-import:hover {
+  background: rgba(255, 69, 0, 0.1);
+  border-color: #FF4500;
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.2);
+}
+
+/* ============================================================================
+   SIDEBAR FOOTER
+   ============================================================================ */
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 15px 20px;
+  border-top: 1px solid rgba(0, 191, 255, 0.2);
+  background: rgba(0, 191, 255, 0.05);
+  text-align: center;
+}
+
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.footer-info small {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   MAIN CONTENT
+   ============================================================================ */
+
+.app-main {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+}
+
+.app-main::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-main::-webkit-scrollbar-thumb {
+  background: rgba(0, 191, 255, 0.2);
+  border-radius: 5px;
+}
+
+.app-main::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 191, 255, 0.4);
+}
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.empty-content {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.empty-content h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+}
+
+.empty-content p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+}
+
+.empty-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 15px 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  border: 2px solid;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.1), rgba(0, 191, 255, 0.05));
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow);
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 191, 255, 0.1));
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(255, 69, 0, 0.05));
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.btn-secondary:hover {
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+  transform: translateY(-3px);
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 260px;
+  }
+
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  .header-left h1 {
+    font-size: 1.3rem;
+  }
+
+  .header-right {
+    flex: 1;
+    min-width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-toggle-nav {
+    display: block;
+  }
+
+  .app-layout {
+    position: relative;
+  }
+
+  .app-sidebar {
+    position: absolute;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    height: 100%;
+  }
+
+  .app-sidebar.show {
+    left: 0;
+  }
+
+  .app-main {
+    width: 100%;
+  }
+
+  .app-header {
+    padding: 15px;
+  }
+
+  .header-left h1 {
+    font-size: 1.1rem;
+  }
+
+  .header-name {
+    max-width: 100px;
+  }
+
+  .header-right {
+    gap: 10px;
+  }
+
+  .btn-edit {
+    padding: 8px 15px;
+    font-size: 0.75rem;
+  }
+
+  .theme-select {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header-left {
+    gap: 10px;
+    width: 100%;
+  }
+
+  .header-left h1 {
+    font-size: 0.95rem;
+  }
+
+  .header-right {
+    width: 100%;
+  }
+
+  .empty-content {
+    padding: 20px;
+  }
+
+  .empty-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .char-select {
+    padding: 8px;
+  }
+
+  .btn-template {
+    font-size: 0.75rem;
+    padding: 10px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+}
