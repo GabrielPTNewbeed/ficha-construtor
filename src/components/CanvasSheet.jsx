@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Rnd } from "react-rnd";
 import { evaluate } from "mathjs";
 import { DND5E_TEMPLATE } from "../data/dnd5eTemplate";
+import { XCOM_TEMPLATE } from "../data/xcomTemplate";
 import WidgetEditor from "./WidgetEditor";
 import ConnectionOverlay from "./ConnectionOverlay";
 
@@ -53,6 +54,10 @@ export default function CanvasSheet() {
 
   const loadDND5eTemplate = () => {
     setWidgets(structuredClone(DND5E_TEMPLATE.widgets));
+  };
+
+  const loadXCOMTemplate = () => {
+    setWidgets(structuredClone(XCOM_TEMPLATE.widgets));
   };
 
   const getValue = useCallback((widgetId) => {
@@ -325,6 +330,24 @@ export default function CanvasSheet() {
             }}
           >
             Load D&D 5e Template
+          </button>
+        )}
+
+        {editMode && (
+          <button
+            onClick={loadXCOMTemplate}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#FF4500",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: "14px"
+            }}
+          >
+            Load XCOM Template
           </button>
         )}
 

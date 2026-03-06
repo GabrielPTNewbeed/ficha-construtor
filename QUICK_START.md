@@ -1,4 +1,4 @@
-# 🚀 QUICK START - XcomCharacterSheet
+# 🚀 QUICK START - Canvas Character Sheet Builder
 
 ## 5 Minutos para Rodar
 
@@ -17,20 +17,14 @@ npm install react-rnd @types/react-rnd
 Copie **APENAS ISSO** em seu `App.tsx`:
 
 ```tsx
-import React, { useState } from 'react';
-import XcomCharacterSheet from './components/XcomCharacterSheet';
-import { XCOM_COMPLETE_TEMPLATE } from './data/xcomTemplates';
+import React from 'react';
+import CanvasSheet from './components/CanvasSheet';
 
 export function App() {
-  const [sheetData, setSheetData] = useState(XCOM_COMPLETE_TEMPLATE);
-
   return (
-    <XcomCharacterSheet
-      data={sheetData}
-      editMode={true}
-      theme="xcom"
-      onDataChange={setSheetData}
-    />
+    <div className="app-root">
+      <CanvasSheet />
+    </div>
   );
 }
 

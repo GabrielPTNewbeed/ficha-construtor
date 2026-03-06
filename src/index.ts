@@ -1,53 +1,26 @@
 /**
- * Index File - Tudo que você precisa importar
- * 
- * Use este arquivo como ponto central para importar
- * componentes, tipos, templates e temas do XcomCharacterSheet
+ * Index File - Exports for TTRPG Character Sheet Builder
+ *
+ * Central export point for canvas-based character sheet components,
+ * templates, and utilities.
  */
 
 // ============================================================================
-// COMPONENTE PRINCIPAL
+// MAIN COMPONENT
 // ============================================================================
-export { XcomCharacterSheet } from '../components/XcomCharacterSheet';
-export type { XcomCharacterSheetProps } from '../types/sheetTypes';
+export { default as CanvasSheet } from './components/CanvasSheet';
 
 // ============================================================================
 // TEMPLATES
 // ============================================================================
-export {
-  XCOM_COMPLETE_TEMPLATE,
-  XCOM_MINIMAL_TEMPLATE,
-  XCOM_LIGHT_TEMPLATE,
-  createCustomTemplate,
-} from '../data/xcomTemplates';
+export { DND5E_TEMPLATE } from './data/dnd5eTemplate';
+export { XCOM_TEMPLATE } from './data/xcomTemplate';
 
 // ============================================================================
-// EXEMPLOS & COMPONENTES AUXILIARES
+// UTILITIES
 // ============================================================================
-export {
-  XcomCharacterSheetExample,
-  SimpleXcomSheet,
-} from '../data/XcomCharacterSheetExample';
-
-// ============================================================================
-// TEMAS PREMIUM
-// ============================================================================
-export {
-  CYBERPUNK_THEME,
-  createCyberpunkSheet,
-  FANTASY_THEME,
-  createFantasySheet,
-  MATRIX_THEME,
-  createMatrixSheet,
-  STEAMPUNK_THEME,
-  createSteampunkSheet,
-  ELDRITCH_THEME,
-  createEldritchSheet,
-  PREMIUM_THEMES_CATALOG,
-  BUNDLE_DEALS,
-  isThemePremiumUnlocked,
-  recordThemePurchase,
-  getAvailableThemes,
+export { default as WidgetEditor } from './components/WidgetEditor';
+export { default as FieldRenderer } from './components/FieldRenderer';
   generateThemeAnalytics,
   type PremiumThemeMeta,
   type UserLicense,

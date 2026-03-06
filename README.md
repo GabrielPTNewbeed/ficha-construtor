@@ -1,10 +1,10 @@
 # Ficha Construtor
 
-🎭 **Character Sheet Builder para TTRPG** - aplicativo web para criar e gerenciar fichas de personagem para jogos de mesa.
+🎭 **Character Sheet Builder para TTRPG** - aplicativo web para criar e gerenciar fichas de personagem para jogos de mesa usando um canvas totalmente editável.
 
 **Live:** https://ficha-construtor.vercel.app
 
-## 🎮 Componentes Suportados
+## 🎮 Templates Disponíveis
 
 ### D&D 5e Character Sheet
 - ✅ Ficha completa D&D 5e
@@ -14,20 +14,22 @@
 - ✅ Combate tático integrado
 
 ### XCOM Tactical Character Sheet
-- ✅ Ficha XCOM TTRPG (novo!)
-- ✅ Sistema de atributos customizável
-- ✅ Tabelas de armas, equipamentos, habilidades
-- ✅ Temas premium (Cyberpunk, Fantasy, Matrix, Steampunk, Eldritch)
-- ✅ Drag-and-drop customizável
+- ✅ Ficha XCOM TTRPG baseada na estrutura fornecida
+- ✅ Sistema de atributos (Vida, Precisão, Movimentação, Concentração)
+- ✅ Tabelas de armas com alcances e danos
+- ✅ Equipamentos e armadura
+- ✅ Habilidades e poderes com custos e cooldowns
+- ✅ Notas e histórico personalizáveis
 
 ## ✨ Features Gerais
 
 - 💾 **Persistência**: localStorage + import/export JSON
 - 🎨 **Temas**: Dark/Light modes + 5 temas premium
-- 📐 **Drag-Drop**: Reposicione elementos livremente
+- 📐 **Drag-Drop**: Reposicione elementos livremente no canvas
 - 🔧 **Customizável**: Campos e layouts personalizáveis
 - 📱 **Responsivo**: Funciona em desktop, tablet, mobile
 - 🚀 **TypeScript**: Type-safe em toda parte
+- 🎯 **Canvas Editável**: Interface totalmente customizável com widgets móveis
 
 ## 🚀 Começar
 
